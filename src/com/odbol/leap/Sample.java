@@ -165,10 +165,19 @@ class Sample {
 //		                             + " mm, palm position: " + hand.palmPosition());
 //		
 		            // Get the hand's normal vector and direction
-//		            Vector normal = hand.palmNormal();
-//		            Vector direction = hand.direction();
-//		
-//		            // Calculate the hand's pitch, roll, and yaw angles
+		            Vector normal = hand.palmNormal();
+		            Vector direction = hand.direction();
+		
+		            // Calculate the hand's pitch, roll, and yaw angles
+		            
+		            OscMessage m = new OscMessage("/hand/" + handIdx + "/direction");
+    				m.addArgument(normalizeRadians(direction.pitch()));
+    				m.addArgument(normalizeRadians(normal.roll()));
+    				m.addArgument(normalizeRadians(direction.yaw()));
+    				
+    				sendOscMessage(m);
+    				
+    				
 //		            System.out.println("Hand pitch: " + Math.toDegrees(direction.pitch()) + " degrees, "
 //		                             + "roll: " + Math.toDegrees(normal.roll()) + " degrees, "
 //		                             + "yaw: " + Math.toDegrees(direction.yaw()) + " degrees\n");
@@ -179,6 +188,10 @@ class Sample {
 	        
         	lastNumHands = handIdx;
 	    }
+
+		private float normalizeRadians(float radians) {
+			return (float) (radians / Math.PI);
+		}
 	}
 
 }
