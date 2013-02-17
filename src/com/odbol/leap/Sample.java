@@ -64,7 +64,9 @@ class Sample {
     
 
 	static class SampleListener extends Listener {
-	    public void onInit(Controller controller) {
+	    private static final float PI2 = (float) (Math.PI * 2);
+
+		public void onInit(Controller controller) {
 	        System.out.println("Initialized");
 	    }
 	
@@ -190,7 +192,7 @@ class Sample {
 	    }
 
 		private float normalizeRadians(float radians) {
-			return (float) (radians / Math.PI);
+			return (float) (radians / PI2);
 		}
 	}
 
