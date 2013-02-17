@@ -80,18 +80,53 @@ class Sample {
 	        System.out.println("Exited");
 	    }
 	
+	    private int lastNumHands = 0;
+	    private int[] lastNumFingers = new int[] {0, 0};
+	    
+	    private String getDigitDelta(int curCount, int lastCount) {
+	        if (curCount > lastCount) {
+	        	return "added";
+	        }
+	        else if (curCount < lastCount) {
+	        	return "removed";
+	        }
+	        else {
+	        	return null;
+	        }
+	    }
+	    
+	    private void sendOscMessage(OscMessage m) {
+	    	try {
+				osc.sendPacket(m);
+				
+				System.out.println(m.toString());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+	    }
+	    
 	    public void onFrame(Controller controller) {
 	        // Get the most recent frame and report some basic information
-	        Frame frame = controller.frame();
-	        System.out.println("Frame id: " + frame.id()
-	                         + ", timestamp: " + frame.timestamp()
-	                         + ", hands: " + frame.hands().count()
-	                         + ", fingers: " + frame.fingers().count()
-	                         + ", tools: " + frame.tools().count());
-	
+	        final Frame frame = controller.frame();
+//	        System.out.println("Frame id: " + frame.id()
+//	                         + ", timestamp: " + frame.timestamp()
+//	                         + ", hands: " + frame.hands().count()
+//	                         + ", fingers: " + frame.fingers().count()
+//	                         + ", tools: " + frame.tools().count());
+//	
+	        final int numHands = frame.hands().count();
+	        String handAction = getDigitDelta(numHands, lastNumHands);
+			if (handAction != null) {
+				OscMessage m = new OscMessage("/hand/status");
+				m.addArgument(handAction);
+				m.addArgument(numHands);
+				
+				sendOscMessage(m);
+			}
+
+        	int handIdx = 0;
 	        if (!frame.hands().empty()) {
 	        	
-	        	int handIdx = 0;
 	        	for ( Hand hand : frame.hands()) {
 	        		
 		            // Check if the hand has any fingers
@@ -110,14 +145,15 @@ class Sample {
 		    				m.addArgument(pos.getY());
 		    				m.addArgument(pos.getZ());
 		    				
-		    				try {
-		    					osc.sendPacket(m);
-		    				} catch (Exception e) {
-		    					e.printStackTrace();
-		    				}
+		    				sendOscMessage(m);
 		                    
 		    				fingerIdx++;
 		                }
+
+		                if (handIdx < lastNumFingers.length) {
+		                	lastNumFingers[handIdx] = fingerIdx;
+		                }
+		                
 		                //avgPos = avgPos.divide(fingers.count());
 		                //System.out.println("Hand has " + fingers.count()
 		                //                 + " fingers, average finger tip position: " + avgPos);
@@ -125,21 +161,23 @@ class Sample {
 		            }
 
 		            // Get the hand's sphere radius and palm position
-		            System.out.println("Hand sphere radius: " + hand.sphereRadius()
-		                             + " mm, palm position: " + hand.palmPosition());
-		
+//		            System.out.println("Hand sphere radius: " + hand.sphereRadius()
+//		                             + " mm, palm position: " + hand.palmPosition());
+//		
 		            // Get the hand's normal vector and direction
-		            Vector normal = hand.palmNormal();
-		            Vector direction = hand.direction();
-		
-		            // Calculate the hand's pitch, roll, and yaw angles
-		            System.out.println("Hand pitch: " + Math.toDegrees(direction.pitch()) + " degrees, "
-		                             + "roll: " + Math.toDegrees(normal.roll()) + " degrees, "
-		                             + "yaw: " + Math.toDegrees(direction.yaw()) + " degrees\n");
+//		            Vector normal = hand.palmNormal();
+//		            Vector direction = hand.direction();
+//		
+//		            // Calculate the hand's pitch, roll, and yaw angles
+//		            System.out.println("Hand pitch: " + Math.toDegrees(direction.pitch()) + " degrees, "
+//		                             + "roll: " + Math.toDegrees(normal.roll()) + " degrees, "
+//		                             + "yaw: " + Math.toDegrees(direction.yaw()) + " degrees\n");
 		            
 	                handIdx++;
-		        }
+		        }	        	
 	        }
+	        
+        	lastNumHands = handIdx;
 	    }
 	}
 
