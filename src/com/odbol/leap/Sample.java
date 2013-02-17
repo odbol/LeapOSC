@@ -91,20 +91,24 @@ class Sample {
 	
 	        if (!frame.hands().empty()) {
 	        	
+	        	int handIdx = 0;
 	        	for ( Hand hand : frame.hands()) {
-		
+	        		
 		            // Check if the hand has any fingers
 		            FingerList fingers = hand.fingers();
 		            if (!fingers.empty()) {
 		                // Calculate the hand's average finger tip position
-		                Vector avgPos = Vector.zero();
+		                //Vector avgPos = Vector.zero();
+		                
+		                int fingerIdx = 0;
 		                for (Finger finger : fingers) {
-		                    avgPos = avgPos.plus(finger.tipPosition());
+		                    //avgPos = avgPos.plus(finger.tipPosition());
+		                	final Vector pos = finger.tipPosition();
 		                    
-		    				OscMessage m = new OscMessage("/hand/" + hand.id() + "/finger/" + finger.id() + "/pos");
-		    				m.addArgument(finger.tipPosition().getX());
-		    				m.addArgument(finger.tipPosition().getY());
-		    				m.addArgument(finger.tipPosition().getZ());
+		    				OscMessage m = new OscMessage("/hand/" + handIdx + "/finger/" + fingerIdx + "/pos");
+		    				m.addArgument(pos.getX());
+		    				m.addArgument(pos.getY());
+		    				m.addArgument(pos.getZ());
 		    				
 		    				try {
 		    					osc.sendPacket(m);
@@ -112,12 +116,14 @@ class Sample {
 		    					e.printStackTrace();
 		    				}
 		                    
+		    				fingerIdx++;
 		                }
-		                avgPos = avgPos.divide(fingers.count());
-		                System.out.println("Hand has " + fingers.count()
-		                                 + " fingers, average finger tip position: " + avgPos);
+		                //avgPos = avgPos.divide(fingers.count());
+		                //System.out.println("Hand has " + fingers.count()
+		                //                 + " fingers, average finger tip position: " + avgPos);
+		                
 		            }
-		
+
 		            // Get the hand's sphere radius and palm position
 		            System.out.println("Hand sphere radius: " + hand.sphereRadius()
 		                             + " mm, palm position: " + hand.palmPosition());
@@ -130,6 +136,8 @@ class Sample {
 		            System.out.println("Hand pitch: " + Math.toDegrees(direction.pitch()) + " degrees, "
 		                             + "roll: " + Math.toDegrees(normal.roll()) + " degrees, "
 		                             + "yaw: " + Math.toDegrees(direction.yaw()) + " degrees\n");
+		            
+	                handIdx++;
 		        }
 	        }
 	    }

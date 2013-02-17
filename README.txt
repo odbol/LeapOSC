@@ -5,6 +5,9 @@ cd bin/
 java -jar LeapOSC.jar
 ````
 
+The default port is 8000 on localhost.
+
+
 Requires :
 
 * OSCLib: https://github.com/odbol/OSCLib
