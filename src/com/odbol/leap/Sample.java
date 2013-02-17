@@ -90,43 +90,47 @@ class Sample {
 	                         + ", tools: " + frame.tools().count());
 	
 	        if (!frame.hands().empty()) {
-	            // Get the first hand
-	            Hand hand = frame.hands().get(0);
-	
-	            // Check if the hand has any fingers
-	            FingerList fingers = hand.fingers();
-	            if (!fingers.empty()) {
-	                // Calculate the hand's average finger tip position
-	                Vector avgPos = Vector.zero();
-	                for (Finger finger : fingers) {
-	                    avgPos = avgPos.plus(finger.tipPosition());
-	                    
-	    				OscMessage m = new OscMessage("/finger/" + finger.id() + "/pos/");
-	    				m.addArgument(finger.tipPosition());
-	    				try {
-	    					osc.sendPacket(m);
-	    				} catch (Exception e) {
-	    					e.printStackTrace();
-	    				}
-	                    
-	                }
-	                avgPos = avgPos.divide(fingers.count());
-	                System.out.println("Hand has " + fingers.count()
-	                                 + " fingers, average finger tip position: " + avgPos);
-	            }
-	
-	            // Get the hand's sphere radius and palm position
-	            System.out.println("Hand sphere radius: " + hand.sphereRadius()
-	                             + " mm, palm position: " + hand.palmPosition());
-	
-	            // Get the hand's normal vector and direction
-	            Vector normal = hand.palmNormal();
-	            Vector direction = hand.direction();
-	
-	            // Calculate the hand's pitch, roll, and yaw angles
-	            System.out.println("Hand pitch: " + Math.toDegrees(direction.pitch()) + " degrees, "
-	                             + "roll: " + Math.toDegrees(normal.roll()) + " degrees, "
-	                             + "yaw: " + Math.toDegrees(direction.yaw()) + " degrees\n");
+	        	
+	        	for ( Hand hand : frame.hands()) {
+		
+		            // Check if the hand has any fingers
+		            FingerList fingers = hand.fingers();
+		            if (!fingers.empty()) {
+		                // Calculate the hand's average finger tip position
+		                Vector avgPos = Vector.zero();
+		                for (Finger finger : fingers) {
+		                    avgPos = avgPos.plus(finger.tipPosition());
+		                    
+		    				OscMessage m = new OscMessage("/hand/" + hand.id() + "/finger/" + finger.id() + "/pos");
+		    				m.addArgument(finger.tipPosition().getX());
+		    				m.addArgument(finger.tipPosition().getY());
+		    				m.addArgument(finger.tipPosition().getZ());
+		    				
+		    				try {
+		    					osc.sendPacket(m);
+		    				} catch (Exception e) {
+		    					e.printStackTrace();
+		    				}
+		                    
+		                }
+		                avgPos = avgPos.divide(fingers.count());
+		                System.out.println("Hand has " + fingers.count()
+		                                 + " fingers, average finger tip position: " + avgPos);
+		            }
+		
+		            // Get the hand's sphere radius and palm position
+		            System.out.println("Hand sphere radius: " + hand.sphereRadius()
+		                             + " mm, palm position: " + hand.palmPosition());
+		
+		            // Get the hand's normal vector and direction
+		            Vector normal = hand.palmNormal();
+		            Vector direction = hand.direction();
+		
+		            // Calculate the hand's pitch, roll, and yaw angles
+		            System.out.println("Hand pitch: " + Math.toDegrees(direction.pitch()) + " degrees, "
+		                             + "roll: " + Math.toDegrees(normal.roll()) + " degrees, "
+		                             + "yaw: " + Math.toDegrees(direction.yaw()) + " degrees\n");
+		        }
 	        }
 	    }
 	}
