@@ -29,6 +29,12 @@ class Sample {
 	
     public static void main(String[] args) {
     	
+    	if (args.length > 1) {
+    		
+    	}
+    	
+    	System.out.println("Sending OSC to " + oscAddr + ":" + oscPort);
+    	
 
     	try {
 			osc = new OscClient(true);//as of now, the TCP implementation of OSCLib is broken (getting buffer overflows!), so we have to use UDP.
